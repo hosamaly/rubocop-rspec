@@ -11,7 +11,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-      - run: bundle install
+          bundler-cache: true
       - run: bundle exec rake confirm_config documentation_syntax_check confirm_documentation
 
   main:
@@ -40,12 +40,12 @@ jobs:
     name: ${{ matrix.task }}, Ruby ${{ matrix.ruby }} (${{ matrix.rubocop_version }})
     steps:
       - uses: actions/checkout@v2
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "${{ matrix.ruby }}"
       - name: Use latest RuboCop from `master`
         run: |
           echo "gem 'rubocop', github: 'rubocop-hq/rubocop'" > Gemfile.local
         if: ${{ matrix.rubocop_version == 'edge' }}
-      - run: bundle install
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "${{ matrix.ruby }}"
+          bundler-cache: true
       - run: bundle exec rake ${{ matrix.task }}
